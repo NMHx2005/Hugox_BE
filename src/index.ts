@@ -52,7 +52,20 @@ const limiter = rateLimit({
     return req.path === '/health';
   }
 });
-
+// Thêm route cho root path
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'HUGOX API Server is running!',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      api: '/api',
+      health: '/health',
+      docs: '/api-docs'
+    }
+  });
+});
 // Apply rate limiting to all routes except public routes
 app.use((req, res, next) => {
   // More lenient rate limiting for public routes
