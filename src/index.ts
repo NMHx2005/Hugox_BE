@@ -52,6 +52,18 @@ const limiter = rateLimit({
     return req.path === '/health';
   }
 });
+
+// Create public limiter at initialization
+const publicLimiter = rateLimit({
+  windowMs: config.rateLimitWindowMs,
+  max: config.nodeEnv === 'development' ? 2000 : 500, // Higher limit for public routes
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+});
 // Thêm route cho root path
 app.get('/', (req, res) => {
   res.json({
@@ -70,16 +82,6 @@ app.get('/', (req, res) => {
 app.use((req, res, next) => {
   // More lenient rate limiting for public routes
   if (req.path.startsWith('/api/public/')) {
-    const publicLimiter = rateLimit({
-      windowMs: config.rateLimitWindowMs,
-      max: config.nodeEnv === 'development' ? 2000 : 500, // Higher limit for public routes
-      message: {
-        success: false,
-        message: 'Too many requests from this IP, please try again later.'
-      },
-      standardHeaders: true,
-      legacyHeaders: false
-    });
     return publicLimiter(req, res, next);
   }
 

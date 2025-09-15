@@ -72,10 +72,23 @@ const productSchema = new Schema<IProduct>({
         type: Boolean,
         default: false
     },
-    specifications: {
-        type: Map,
-        of: Schema.Types.Mixed
-    },
+    specifications: [{
+        title: {
+            type: String,
+            required: true,
+            trim: true,
+            maxlength: [200, 'Specification title cannot be more than 200 characters']
+        },
+        content: {
+            type: String,
+            required: true,
+            trim: true
+        },
+        order: {
+            type: Number,
+            default: 0
+        }
+    }],
     attributes: {
         type: Map,
         of: Schema.Types.Mixed
@@ -136,7 +149,43 @@ const productSchema = new Schema<IProduct>({
             type: Number,
             default: 0
         }
-    }]
+    }],
+    // Rating and Review Information
+    rating: {
+        type: Number,
+        min: [0, 'Rating cannot be negative'],
+        max: [5, 'Rating cannot be more than 5'],
+        default: 0
+    },
+    reviewsCount: {
+        type: Number,
+        min: [0, 'Reviews count cannot be negative'],
+        default: 0
+    },
+    sold: {
+        type: Number,
+        min: [0, 'Sold count cannot be negative'],
+        default: 0
+    },
+    // Quality Metrics
+    qualityRating: {
+        type: Number,
+        min: [0, 'Quality rating cannot be negative'],
+        max: [5, 'Quality rating cannot be more than 5'],
+        default: 0
+    },
+    deliveryRating: {
+        type: Number,
+        min: [0, 'Delivery rating cannot be negative'],
+        max: [5, 'Delivery rating cannot be more than 5'],
+        default: 5
+    },
+    warrantyRating: {
+        type: Number,
+        min: [0, 'Warranty rating cannot be negative'],
+        max: [5, 'Warranty rating cannot be more than 5'],
+        default: 5
+    }
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

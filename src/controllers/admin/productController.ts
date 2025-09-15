@@ -39,6 +39,39 @@ const validateAndCleanProductData = (productData: any) => {
             }));
     }
 
+    // Validate and clean specifications
+    if (productData.specifications) {
+        productData.specifications = productData.specifications
+            .filter((spec: any) => spec.title && spec.content && spec.title.trim() && spec.content.trim())
+            .map((spec: any, index: number) => ({
+                title: spec.title.trim(),
+                content: spec.content.trim(),
+                order: spec.order || index
+            }));
+    }
+
+    // Validate rating fields
+    if (productData.rating !== undefined) {
+        productData.rating = Math.min(5, Math.max(0, Number(productData.rating) || 0));
+    }
+    if (productData.qualityRating !== undefined) {
+        productData.qualityRating = Math.min(5, Math.max(0, Number(productData.qualityRating) || 0));
+    }
+    if (productData.deliveryRating !== undefined) {
+        productData.deliveryRating = Math.min(5, Math.max(0, Number(productData.deliveryRating) || 5));
+    }
+    if (productData.warrantyRating !== undefined) {
+        productData.warrantyRating = Math.min(5, Math.max(0, Number(productData.warrantyRating) || 5));
+    }
+
+    // Validate count fields
+    if (productData.reviewsCount !== undefined) {
+        productData.reviewsCount = Math.max(0, Number(productData.reviewsCount) || 0);
+    }
+    if (productData.sold !== undefined) {
+        productData.sold = Math.max(0, Number(productData.sold) || 0);
+    }
+
     return productData;
 };
 

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Category from '../../models/Category';
 import { createError } from '../../middleware/errorHandler';
+import mongoose from 'mongoose';
 
 // Get all categories for admin (with search, status, pagination)
 export const getCategories = async (req: Request, res: Response): Promise<void> => {
@@ -114,5 +115,35 @@ export const deleteCategory = async (req: Request, res: Response): Promise<void>
     res.json({
         success: true,
         message: 'Category deleted successfully'
+    });
+};
+
+// Change category status
+export const changeCategoryStatus = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw createError('Invalid category ID', 400);
+    }
+
+    if (!['active', 'inactive'].includes(status)) {
+        throw createError('Status must be either active or inactive', 400);
+    }
+
+    const category = await Category.findByIdAndUpdate(
+        id,
+        { status, updatedAt: new Date() },
+        { new: true, runValidators: true }
+    ).populate('parent', 'name slug');
+
+    if (!category) {
+        throw createError('Category not found', 404);
+    }
+
+    res.json({
+        success: true,
+        message: `Category status changed to ${status}`,
+        data: { category }
     });
 };

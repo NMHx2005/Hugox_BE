@@ -1,11 +1,12 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { 
-  getCategories, 
-  getCategory, 
-  createCategory, 
-  updateCategory, 
-  deleteCategory 
+import {
+  getCategories,
+  getCategory,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  changeCategoryStatus
 } from '../../controllers/admin/categoryController';
 import { authenticate, authorize } from '../../middleware/auth';
 import { asyncHandler } from '../../middleware/errorHandler';
@@ -22,11 +23,16 @@ const categoryValidation = [
   body('status').optional().isIn(['active', 'inactive']).withMessage('Status must be active or inactive')
 ];
 
+const statusChangeValidation = [
+  body('status').isIn(['active', 'inactive']).withMessage('Status must be active or inactive')
+];
+
 // Routes
 router.get('/', asyncHandler(getCategories));
 router.get('/:id', asyncHandler(getCategory));
 router.post('/', categoryValidation, asyncHandler(createCategory));
 router.put('/:id', categoryValidation, asyncHandler(updateCategory));
 router.delete('/:id', asyncHandler(deleteCategory));
+router.patch('/:id/status', statusChangeValidation, asyncHandler(changeCategoryStatus));
 
 export default router;

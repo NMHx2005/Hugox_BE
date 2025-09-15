@@ -33,7 +33,11 @@ export interface IProduct extends Document {
   stock: number;
   status: 'active' | 'inactive' | 'draft';
   featured: boolean;
-  specifications?: Record<string, any>;
+  specifications?: Array<{
+    title: string;
+    content: string;
+    order?: number;
+  }>;
   attributes?: Record<string, any>;
   tags?: string[];
   seoTitle?: string;
@@ -52,6 +56,14 @@ export interface IProduct extends Document {
     content: string;
     order?: number;
   }>;
+  // Rating and Review Information
+  rating?: number;
+  reviewsCount?: number;
+  sold?: number;
+  // Quality Metrics
+  qualityRating?: number;
+  deliveryRating?: number;
+  warrantyRating?: number;
   createdAt: Date;
   updatedAt: Date;
 }

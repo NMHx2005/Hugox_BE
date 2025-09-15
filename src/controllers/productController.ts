@@ -90,20 +90,8 @@ export const getProduct = async (req: Request, res: Response): Promise<void> => 
     throw createError('Product not found', 404);
   }
 
-  // Aggregate rating and review count if Review model exists
-  let ratingAvg = 0;
-  let reviewsCount = 0;
-  try {
-    const Review = (await import('../models/Review')).default as any;
-    const agg = await Review.aggregate([
-      { $match: { product: new (require('mongoose')).Types.ObjectId(product._id), status: 'approved' } },
-      { $group: { _id: null, ratingAvg: { $avg: '$rating' }, reviewsCount: { $sum: 1 } } }
-    ]);
-    if (agg && agg.length) {
-      ratingAvg = Number(agg[0].ratingAvg?.toFixed(1) || 0);
-      reviewsCount = agg[0].reviewsCount || 0;
-    }
-  } catch { }
+  // Note: Rating and review count are now stored directly in the product document
+  // No need to aggregate from Review collection anymore
 
   // Related products by same category
   const related = await Product.find({ _id: { $ne: product._id }, category: product.category, status: 'active' })
@@ -113,7 +101,7 @@ export const getProduct = async (req: Request, res: Response): Promise<void> => 
 
   res.json({
     success: true,
-    data: { product, ratingAvg, reviewsCount, related }
+    data: { product, related }
   });
 };
 
